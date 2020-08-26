@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:great_places/Models/places.dart';
 import 'package:great_places/Providers/great_places.dart';
 import 'package:great_places/widgets/image_input.dart';
+import 'package:great_places/widgets/location_input.dart';
 import 'package:provider/provider.dart';
 
 class AddPlace extends StatefulWidget {
@@ -14,17 +16,24 @@ class AddPlace extends StatefulWidget {
 class _AddPlaceState extends State<AddPlace> {
   final _textController = TextEditingController();
   File _pickedImage;
+  PlaceLocation _pickedLocation;
 
   void _selectedImage(File pickedImage) {
     _pickedImage = pickedImage;
   }
 
+  void selectPlace(double lat, double long) {
+    _pickedLocation = PlaceLocation(latitude: lat, longitude: long);
+  }
+
   void _saveForm() {
-    if (_textController.text.isEmpty || _pickedImage == null) {
+    if (_textController.text.isEmpty ||
+        _pickedImage == null ||
+        _pickedLocation == null) {
       return;
     }
     Provider.of<GreatPlaces>(context, listen: false)
-        .addPlace(_textController.text, _pickedImage);
+        .addPlace(_textController.text, _pickedImage, _pickedLocation);
     Navigator.of(context).pop();
   }
 
@@ -50,6 +59,8 @@ class _AddPlaceState extends State<AddPlace> {
                     height: 10,
                   ),
                   ImageInput(_selectedImage),
+                  SizedBox(height: 10),
+                  LocationInput(selectPlace),
                 ],
               ),
             ),
